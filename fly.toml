@@ -2,8 +2,6 @@ app = "vendoc-go"
 primary_region = "iad"
 
 [build]
-  builder = "paketobuildpacks/builder:base"
-  buildpacks = ["gcr.io/paketo-buildpacks/go"]
 
 [env]
   PORT = "8080"
