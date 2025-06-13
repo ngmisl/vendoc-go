@@ -1,88 +1,95 @@
-{{template "layout.html" .}} {{define "content"}}
-<header>
-  <h1>Analysis for: {{.Filename}}</h1>
-</header>
-
-<main>
-  <div class="container">
-    <div id="chat-container">
-      <div id="chat-history">
-        <!-- Initial AI message -->
-        <div class="bot-message">
-          <p>
-            Your document has been analyzed. What would you like to know? You
-            can ask for a summary, key points, or specific details.
-          </p>
-        </div>
-        <!-- Chat messages will be appended here by htmx -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}} - Private Doc Analyzer</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="analysis-container">
+  <div class="document-info">
+    <span>📄 {{.Filename}}</span>
+    <form method="post" action="/session/{{.SessionID}}/delete" style="display: inline;">
+      <input type="hidden" name="_method" value="DELETE">
+      <button type="submit" class="delete-btn" onclick="return confirm('Are you sure you want to end this session and delete the document?')">End & Delete</button>
+    </form>
+  </div>
+  
+  <!-- Quick Task Buttons -->
+  <div class="task-grid">
+    <form method="post" action="/task/{{.SessionID}}" style="display: inline;">
+      <input type="hidden" name="task" value="summarize">
+      <button type="submit" onclick="showTaskLoading(this)">
+        📝 Summarize
+      </button>
+    </form>
+    <form method="post" action="/task/{{.SessionID}}" style="display: inline;">
+      <input type="hidden" name="task" value="key-points">
+      <button type="submit" onclick="showTaskLoading(this)">
+        🎯 Key Points
+      </button>
+    </form>
+    <form method="post" action="/task/{{.SessionID}}" style="display: inline;">
+      <input type="hidden" name="task" value="risks">
+      <button type="submit" onclick="showTaskLoading(this)">
+        ⚠️ Find Risks
+      </button>
+    </form>
+    <form method="post" action="/task/{{.SessionID}}" style="display: inline;">
+      <input type="hidden" name="task" value="action-items">
+      <button type="submit" onclick="showTaskLoading(this)">
+        ✅ Action Items
+      </button>
+    </form>
+  </div>
+  
+  <div id="chat-messages">
+    <!-- Messages will be added here when tasks are executed -->
+    <div class="message ai-message">
+      <div class="message-header">
+        <span class="ai-badge">AI Assistant</span>
+        <span class="timestamp">Ready</span>
       </div>
-
-      <div id="chat-form">
-        <input
-          type="text"
-          name="prompt"
-          placeholder="Ask a question about the document..."
-          required
-        />
-        <button
-          hx-post="/chat/{{.SessionID}}"
-          hx-include="[name='prompt']"
-          hx-target="#chat-history"
-          hx-swap="beforeend"
-          hx-indicator="#chat-loading"
-        >
-          Send
-        </button>
-      </div>
-      <div
-        id="chat-loading"
-        class="htmx-indicator"
-        style="text-align: center; margin-top: 1rem"
-      >
-        <p>Thinking...</p>
-      </div>
-    </div>
-
-    <div id="task-output" style="margin-top: 2rem">
-      <h2>Quick Tasks</h2>
-      <!-- Task results will be displayed here -->
-      <div id="task-buttons">
-        <button
-          name="task"
-          value="summary"
-          hx-post="/task/{{.SessionID}}"
-          hx-target="#chat-history"
-          hx-swap="beforeend"
-          hx-indicator="#chat-loading"
-        >
-          Summarize Document
-        </button>
-        <button
-          name="task"
-          value="keywords"
-          style="margin-left: 1rem"
-          hx-post="/task/{{.SessionID}}"
-          hx-target="#chat-history"
-          hx-swap="beforeend"
-          hx-indicator="#chat-loading"
-        >
-          Extract Keywords
-        </button>
+      <div class="message-content">
+        Your document has been analyzed. Use the quick tasks above or ask a specific question below.
       </div>
     </div>
   </div>
-</main>
+  
+  <form method="post" action="/chat/{{.SessionID}}" onsubmit="showChatLoading(this)">
+    <input type="text" name="message" 
+           placeholder="Ask about your document..."
+           required>
+    <button type="submit">→</button>
+  </form>
+  
+  <div id="loading" style="display: none;">
+    <p>Processing...</p>
+  </div>
+  
+  <div class="session-info">
+    <p>Session expires in {{.ExpiresIn}} • Documents auto-deleted</p>
+  </div>
+</div>
 
-<footer>
-  <p>
-    Session expires in {{.ExpiresIn}}.
-    <a
-      href="/"
-      hx-delete="/session/{{.SessionID}}"
-      hx-target="body"
-      style="color: #007bff"
-      >Start Over</a
-    >
-  </p>
-</footer>
-{{end}}
+<script>
+function showTaskLoading(button) {
+  button.disabled = true;
+  button.innerHTML = '⏳ Processing...';
+  document.getElementById('loading').style.display = 'block';
+  return true;
+}
+
+function showChatLoading(form) {
+  const button = form.querySelector('button[type="submit"]');
+  const input = form.querySelector('input[name="message"]');
+  button.disabled = true;
+  input.disabled = true;
+  button.innerHTML = '⏳';
+  document.getElementById('loading').style.display = 'block';
+  return true;
+}
+</script>
+</body>
+</html>

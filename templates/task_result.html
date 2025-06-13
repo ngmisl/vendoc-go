@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}} - Private Doc Analyzer</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="analysis-container">
+  <div class="document-info">
+    <span>📄 {{.Filename}}</span>
+    <form method="post" action="/session/{{.SessionID}}/delete" style="display: inline;">
+      <input type="hidden" name="_method" value="DELETE">
+      <button type="submit" class="delete-btn" onclick="return confirm('Are you sure you want to end this session and delete the document?')">End & Delete</button>
+    </form>
+  </div>
+  
+  <!-- Quick Task Buttons -->
+  <div class="task-grid">
+    <form method="post" action="/task/{{.SessionID}}" style="display: inline;">
+      <input type="hidden" name="task" value="summarize">
+      <button type="submit" onclick="showTaskLoading(this)">
+        📝 Summarize
+      </button>
+    </form>
+    <form method="post" action="/task/{{.SessionID}}" style="display: inline;">
+      <input type="hidden" name="task" value="key-points">
+      <button type="submit" onclick="showTaskLoading(this)">
+        🎯 Key Points
+      </button>
+    </form>
+    <form method="post" action="/task/{{.SessionID}}" style="display: inline;">
+      <input type="hidden" name="task" value="risks">
+      <button type="submit" onclick="showTaskLoading(this)">
+        ⚠️ Find Risks
+      </button>
+    </form>
+    <form method="post" action="/task/{{.SessionID}}" style="display: inline;">
+      <input type="hidden" name="task" value="action-items">
+      <button type="submit" onclick="showTaskLoading(this)">
+        ✅ Action Items
+      </button>
+    </form>
+  </div>
+  
+  <div id="chat-messages">
+    <!-- Previous messages -->
+    <div class="message ai-message">
+      <div class="message-header">
+        <span class="ai-badge">AI Assistant</span>
+        <span class="timestamp">Ready</span>
+      </div>
+      <div class="message-content">
+        Your document has been analyzed. Use the quick tasks above or ask a specific question below.
+      </div>
+    </div>
+    
+    <!-- New task result -->
+    {{if .TaskResult}}
+    <div class="message ai-message">
+      <div class="message-header">
+        <span class="task-badge">{{.TaskLabel}}</span>
+        <span class="timestamp">{{.Timestamp}}</span>
+      </div>
+      <div class="message-content">{{.TaskResult}}</div>
+    </div>
+    {{end}}
+    
+    <!-- Chat message if any -->
+    {{if .UserMessage}}
+    <div class="message user-message">
+      <div class="message-header">
+        <span class="user-badge">You</span>
+        <span class="timestamp">{{.Timestamp}}</span>
+      </div>
+      <div class="message-content">{{.UserMessage}}</div>
+    </div>
+    <div class="message ai-message">
+      <div class="message-header">
+        <span class="ai-badge">AI Assistant</span>
+        <span class="timestamp">{{.Timestamp}}</span>
+      </div>
+      <div class="message-content">{{.ChatResponse}}</div>
+    </div>
+    {{end}}
+  </div>
+  
+  <form method="post" action="/chat/{{.SessionID}}" onsubmit="showChatLoading(this)">
+    <input type="text" name="message" 
+           placeholder="Ask about your document..."
+           required>
+    <button type="submit">→</button>
+  </form>
+  
+  <div id="loading" style="display: none;">
+    <p>Processing...</p>
+  </div>
+  
+  <div class="session-info">
+    <p>Session expires in {{.ExpiresIn}} • Documents auto-deleted</p>
+  </div>
+</div>
+
+<script>
+function showTaskLoading(button) {
+  button.disabled = true;
+  button.innerHTML = '⏳ Processing...';
+  document.getElementById('loading').style.display = 'block';
+  return true;
+}
+
+function showChatLoading(form) {
+  const button = form.querySelector('button[type="submit"]');
+  const input = form.querySelector('input[name="message"]');
+  button.disabled = true;
+  input.disabled = true;
+  button.innerHTML = '⏳';
+  document.getElementById('loading').style.display = 'block';
+  return true;
+}
+</script>
+</body>
+</html>

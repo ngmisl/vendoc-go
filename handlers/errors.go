@@ -26,8 +26,17 @@ func handleError(w http.ResponseWriter, r *http.Request, err error, userMessage 
 		return
 	}
 
-	// Regular HTTP error response
-	http.Error(w, userMessage, statusCode)
+	// Try to write error response, but handle case where headers might already be sent
+	defer func() {
+		if r := recover(); r != nil {
+			// Headers already sent, just log
+			log.Printf("Could not send error response, headers already sent: %v", r)
+		}
+	}()
+	
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.WriteHeader(statusCode)
+	fmt.Fprintf(w, "%s", userMessage)
 }
 
 func handleSuccess(w http.ResponseWriter, r *http.Request, message string) {

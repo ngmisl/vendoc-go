@@ -1,47 +1,127 @@
-{{template "layout.html" .}} {{define "content"}}
-<header>
-  <h1>🔒 Private Doc Analyzer</h1>
-</header>
-
-<main>
-  <div class="container">
-    <p style="text-align: center; margin-bottom: 2rem">
-      Upload a confidential document for AI-powered analysis. Your data is
-      processed in-memory and is never stored or logged.
-    </p>
-
-    <form
-      id="upload-form"
-      hx-post="/upload"
-      hx-encoding="multipart/form-data"
-      hx-target="body"
-      hx-indicator="#loading-indicator"
-    >
-      <input
-        type="file"
-        name="document"
-        id="document-input"
-        accept=".pdf,.docx,.txt"
-        required
-      />
-
-      <button type="submit">Analyze Document</button>
-    </form>
-
-    <div
-      id="loading-indicator"
-      class="htmx-indicator"
-      style="text-align: center; margin-top: 1rem"
-    >
-      <p>🔄 Processing your document, please wait...</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}} - Private Doc Analyzer</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="landing-page">
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-icon">🔒</div>
+      <h1 class="hero-title">Private Document Analyzer</h1>
+      <p class="hero-subtitle">
+        Secure AI-powered document analysis. Your data stays private and is never stored.
+      </p>
     </div>
-  </div>
-</main>
+  </section>
 
-<footer>
-  <p>
-    Privacy Guarantee: Your documents are automatically deleted after 30
-    minutes.
-  </p>
-</footer>
-{{end}}
+  <!-- Upload Section -->
+  <section class="upload-section">
+    <div class="container">
+      <div class="upload-card">
+        <h2>Upload Your Document</h2>
+        <p class="upload-description">
+          Support for PDF, DOCX, and TXT files up to 10MB
+        </p>
+
+        <form
+          id="upload-form"
+          action="/upload"
+          method="post"
+          enctype="multipart/form-data"
+          class="upload-form"
+        >
+          <div class="file-input-wrapper">
+            <input
+              type="file"
+              name="document"
+              id="document-input"
+              accept=".pdf,.docx,.txt"
+              required
+              class="file-input"
+            />
+            <label for="document-input" class="file-label">
+              <div class="file-icon">📄</div>
+              <div class="file-text">
+                <span class="file-main">Choose file or drag & drop</span>
+                <span class="file-sub">PDF, DOCX, TXT up to 10MB</span>
+              </div>
+            </label>
+          </div>
+
+          <button type="submit" class="analyze-btn">
+            <span class="btn-icon">🔍</span>
+            Analyze Document
+          </button>
+        </form>
+
+        <div id="loading-indicator" class="loading-indicator">
+          <div class="spinner"></div>
+          <p>Processing your document securely...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="container">
+      <div class="features-grid">
+        <div class="feature">
+          <div class="feature-icon">🛡️</div>
+          <h3>100% Private</h3>
+          <p>Documents processed in-memory only. No storage, no logs, no traces.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🤖</div>
+          <h3>AI-Powered</h3>
+          <p>Advanced AI analysis for summaries, key points, risks, and insights.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">⚡</div>
+          <h3>Fast & Secure</h3>
+          <p>Quick analysis with enterprise-grade security. Auto-delete after 30 minutes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p class="privacy-note">
+        <span class="privacy-icon">🔐</span>
+        Privacy Guarantee: Your documents are automatically deleted after 30 minutes
+      </p>
+    </div>
+  </footer>
+</div>
+
+<script>
+    // Simple loading state handler
+    function showLoading(form) {
+        const btn = form.querySelector('button[type="submit"]');
+        const indicator = document.getElementById('loading-indicator');
+        if (btn) btn.disabled = true;
+        if (indicator) indicator.style.display = 'block';
+    }
+    
+    // Auto-submit forms on file selection for better UX
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('document-input');
+        if (fileInput) {
+            fileInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    showLoading(this.form);
+                    this.form.submit();
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

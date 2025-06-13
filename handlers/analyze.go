@@ -46,7 +46,7 @@ func Analyze(w http.ResponseWriter, r *http.Request) {
 	log.Println("Executing analyze template...")
 	if err := templates.ExecuteTemplate(w, "analyze.html", data); err != nil {
 		log.Printf("ERROR executing analyze template: %v", err)
-		http.Error(w, "Template execution failed", http.StatusInternalServerError)
+		handleError(w, r, err, "Template execution failed", http.StatusInternalServerError)
 		return
 	}
 	log.Println("Analyze template executed successfully")

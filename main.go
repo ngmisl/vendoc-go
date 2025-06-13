@@ -44,11 +44,15 @@ func main() {
 
 	// Application routes
 	mux.HandleFunc("GET /", handlers.Home)
+	mux.HandleFunc("GET /favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+		http.NotFound(w, r)
+	})
 	mux.HandleFunc("POST /upload", handlers.Upload)
 	mux.HandleFunc("GET /analyze/{session}", handlers.Analyze)
 	mux.HandleFunc("POST /chat/{session}", handlers.Chat)
 	mux.HandleFunc("POST /task/{session}", handlers.ExecuteTask)
 	mux.HandleFunc("DELETE /session/{session}", handlers.DeleteSession)
+	mux.HandleFunc("POST /session/{session}/delete", handlers.DeleteSession)
 
 	// Static files (must be after other routes)
 	mux.HandleFunc("GET /static/{file...}", func(w http.ResponseWriter, r *http.Request) {
@@ -97,8 +101,8 @@ func main() {
 
 func securityMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Security headers
-		csp := "default-src 'self'; script-src-elem 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline'; font-src 'self';"
+		// Security headers  
+		csp := "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self';"
 		w.Header().Set("Content-Security-Policy", csp)
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		w.Header().Set("X-Frame-Options", "DENY")

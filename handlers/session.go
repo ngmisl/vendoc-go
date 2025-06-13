@@ -20,6 +20,5 @@ func DeleteSession(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Redirect to home page
-	w.Header().Set("HX-Redirect", "/")
-	w.WriteHeader(http.StatusOK)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

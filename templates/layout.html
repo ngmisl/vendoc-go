@@ -5,9 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{.Title}} - Private Doc Analyzer</title>
     <link rel="stylesheet" href="/static/style.css">
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </head>
 <body>
-    {{block "content" .}}{{end}}
+    {{template "body" .}}
+    <script>
+        // Simple loading state handler
+        function showLoading(form) {
+            const btn = form.querySelector('button[type="submit"]');
+            const indicator = document.getElementById('loading-indicator');
+            if (btn) btn.disabled = true;
+            if (indicator) indicator.style.display = 'block';
+        }
+        
+        // Auto-submit forms on file selection for better UX
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('document-input');
+            if (fileInput) {
+                fileInput.addEventListener('change', function() {
+                    if (this.files.length > 0) {
+                        showLoading(this.form);
+                        this.form.submit();
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

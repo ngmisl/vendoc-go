@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"html/template"
 	"net/http"
 	"time"
 
@@ -49,25 +48,32 @@ func Chat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Return HTML fragment
-	w.Header().Set("Content-Type", "text/html")
-	fmt.Fprintf(w, `
-		<div class="message user-message">
-			<div class="message-header">
-				<span class="user-badge">You</span>
-				<span class="timestamp">%s</span>
-			</div>
-			<div class="message-content">%s</div>
-		</div>
-		<div class="message ai-message">
-			<div class="message-header">
-				<span class="ai-badge">AI Assistant</span>
-				<span class="timestamp">%s</span>
-			</div>
-			<div class="message-content">%s</div>
-		</div>
-	`, time.Now().Format("3:04 PM"), 
-	   template.HTMLEscapeString(message),
-	   time.Now().Format("3:04 PM"),
-	   template.HTMLEscapeString(response))
+	// Calculate remaining time for display
+	remaining := time.Until(session.ExpiresAt).Minutes()
+	expiresIn := fmt.Sprintf("%.0f minutes", remaining)
+
+	// Prepare data for template
+	data := struct {
+		SessionID    string
+		Filename     string
+		Title        string
+		ExpiresIn    string
+		UserMessage  string
+		ChatResponse string
+		Timestamp    string
+	}{
+		SessionID:    session.ID,
+		Filename:     session.Filename,
+		Title:        "Analyze Document: " + session.Filename,
+		ExpiresIn:    expiresIn,
+		UserMessage:  message,
+		ChatResponse: response,
+		Timestamp:    time.Now().Format("3:04 PM"),
+	}
+
+	// Return full page with chat result
+	if err := templates.ExecuteTemplate(w, "task_result.html", data); err != nil {
+		handleError(w, r, err, "Failed to render page", http.StatusInternalServerError)
+		return
+	}
 }

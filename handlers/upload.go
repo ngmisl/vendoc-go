@@ -84,8 +84,8 @@ func Upload(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Printf("Session created successfully: %s", session.ID)
 
-	// Redirect to analysis page
-	w.Header().Set("HX-Redirect", fmt.Sprintf("/analyze/%s", session.ID))
-	w.WriteHeader(http.StatusOK)
-	log.Println("Redirecting to analysis page")
+	// Redirect to analysis page using standard HTTP redirect
+	redirectURL := fmt.Sprintf("/analyze/%s", session.ID)
+	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+	log.Printf("Redirecting to: %s", redirectURL)
 }
