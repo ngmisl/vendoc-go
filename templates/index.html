@@ -1,0 +1,47 @@
+{{template "layout.html" .}} {{define "content"}}
+<header>
+  <h1>🔒 Private Doc Analyzer</h1>
+</header>
+
+<main>
+  <div class="container">
+    <p style="text-align: center; margin-bottom: 2rem">
+      Upload a confidential document for AI-powered analysis. Your data is
+      processed in-memory and is never stored or logged.
+    </p>
+
+    <form
+      id="upload-form"
+      hx-post="/upload"
+      hx-encoding="multipart/form-data"
+      hx-target="body"
+      hx-indicator="#loading-indicator"
+    >
+      <input
+        type="file"
+        name="document"
+        id="document-input"
+        accept=".pdf,.docx,.txt"
+        required
+      />
+
+      <button type="submit">Analyze Document</button>
+    </form>
+
+    <div
+      id="loading-indicator"
+      class="htmx-indicator"
+      style="text-align: center; margin-top: 1rem"
+    >
+      <p>🔄 Processing your document, please wait...</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>
+    Privacy Guarantee: Your documents are automatically deleted after 30
+    minutes.
+  </p>
+</footer>
+{{end}}

@@ -1,0 +1,88 @@
+{{template "layout.html" .}} {{define "content"}}
+<header>
+  <h1>Analysis for: {{.Filename}}</h1>
+</header>
+
+<main>
+  <div class="container">
+    <div id="chat-container">
+      <div id="chat-history">
+        <!-- Initial AI message -->
+        <div class="bot-message">
+          <p>
+            Your document has been analyzed. What would you like to know? You
+            can ask for a summary, key points, or specific details.
+          </p>
+        </div>
+        <!-- Chat messages will be appended here by htmx -->
+      </div>
+
+      <div id="chat-form">
+        <input
+          type="text"
+          name="prompt"
+          placeholder="Ask a question about the document..."
+          required
+        />
+        <button
+          hx-post="/chat/{{.SessionID}}"
+          hx-include="[name='prompt']"
+          hx-target="#chat-history"
+          hx-swap="beforeend"
+          hx-indicator="#chat-loading"
+        >
+          Send
+        </button>
+      </div>
+      <div
+        id="chat-loading"
+        class="htmx-indicator"
+        style="text-align: center; margin-top: 1rem"
+      >
+        <p>Thinking...</p>
+      </div>
+    </div>
+
+    <div id="task-output" style="margin-top: 2rem">
+      <h2>Quick Tasks</h2>
+      <!-- Task results will be displayed here -->
+      <div id="task-buttons">
+        <button
+          name="task"
+          value="summary"
+          hx-post="/task/{{.SessionID}}"
+          hx-target="#chat-history"
+          hx-swap="beforeend"
+          hx-indicator="#chat-loading"
+        >
+          Summarize Document
+        </button>
+        <button
+          name="task"
+          value="keywords"
+          style="margin-left: 1rem"
+          hx-post="/task/{{.SessionID}}"
+          hx-target="#chat-history"
+          hx-swap="beforeend"
+          hx-indicator="#chat-loading"
+        >
+          Extract Keywords
+        </button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>
+    Session expires in {{.ExpiresIn}}.
+    <a
+      href="/"
+      hx-delete="/session/{{.SessionID}}"
+      hx-target="body"
+      style="color: #007bff"
+      >Start Over</a
+    >
+  </p>
+</footer>
+{{end}}
