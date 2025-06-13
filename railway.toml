@@ -1,0 +1,10 @@
+[build]
+  builder = "nixpacks"
+
+[deploy]
+  startCommand = "./main"
+
+[env]
+  PORT = "8080"
+  SESSION_TIMEOUT_MINUTES = "30"
+  MAX_FILE_SIZE_MB = "10"
