@@ -79,7 +79,3 @@ The server will start, typically on `http://localhost:8080` (or the port specifi
 *   **Other Security Headers**: Includes `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, and `X-XSS-Protection: 1; mode=block` for enhanced security.
 *   **No Persistent Storage**: Uploaded documents are processed in memory and are not saved to disk by the server.
 *   **Temporary Sessions**: Document content and analysis sessions are temporary and expire after 30 minutes.
-
----
-
-This README should provide a good overview for anyone looking at your project.
