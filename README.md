@@ -1,4 +1,4 @@
-[![CodeQL](https://github.com/ngmisl/vendoc-go/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/ngmisl/vendoc-go/actions/workflows/github-code-scanning/codeql)
+[![CodeQL](https://github.com/ngmisl/vendoc-go/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/ngmisl/vendoc-go/actions/workflows/github-code-scanning/codeql) [![Go](https://github.com/ngmisl/vendoc-go/actions/workflows/go.yml/badge.svg)](https://github.com/ngmisl/vendoc-go/actions/workflows/go.yml)
 
 # Vendoc Go: Private Document Analyzer
 
